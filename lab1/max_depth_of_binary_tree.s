@@ -1,7 +1,7 @@
 .data
 macros:
 	.equ NUM_NODE, 7   # Define macro of NUM_NODE 7
-        .equ null    , 101 # Define macro of null 101
+	.equ null    , 101 # Define macro of null 101
 	.equ NULL    , 0   # Load ASCII code of NULL
 tree_list:
 	.word 3, 9, 20, null, null, 15, 7 # Stores tree_list[] array
@@ -16,6 +16,10 @@ main:
 	add a2, x0, x0    # 3rd Parameter: 0
 	jal add_child_nodes
 
+	# Exit program
+	li a7, 10
+	ecall
+
 init_node:
 	# Prologue: Make space on the stack and back-up registers
 	addi sp, sp, -12
@@ -28,7 +32,7 @@ init_node:
 	# Allocate a memory region on heap by the `malloc` implmented by `ecall`
 	li a0, 12    	# Number of bytes to be allcated, 4*3 bytes for TreeNode
 	jal malloc
-	lw t0,  (s0)	# new_node->val = value;
+	lw t0, 0(s0)	# new_node->val = value;
 	sw t0, 0(a0) 	#
 	sw s1, 4(a0)	# new_node->left = NULL;
 	sw s1, 8(a0)   	# new_node->right = NULL;
@@ -129,6 +133,6 @@ end_of_add_child_nodes:
 # === Allocates a1 bytes on the heap, returns pointer to start in a0 ===
 malloc:
 	addi a1, a0, 0	# Can the number 0 be replaced by x0?
-	addi a0, x0, 9
+	li   a7, 10
 	ecall
 	jr ra		# Return to caller
