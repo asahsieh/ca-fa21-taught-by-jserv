@@ -8,12 +8,12 @@ tree_list:
 
 .text
 main:
-	la t0, tree_list  # Load address of tree_list
- 	lw a0, 0(t0)	  # put tree_list[0] to argument register, a0
+	la  t0, tree_list # Load address of tree_list
+ 	lw  a0, 0(t0)	  # put tree_list[0] to argument register, a0
 	jal init_node     # Save return address and jump to the init_node function
-	addi a0, x0, a0   # 1st Parameter: root
-	addi a1, x0, t0   # 2nd Parameter: tree_list
-	addi a2, x0, x0   # 3rd Parameter: 0
+	add a0, x0, a0    # 1st Parameter: root
+	add a1, x0, t0    # 2nd Parameter: tree_list
+	add a2, x0, x0    # 3rd Parameter: 0
 	jal add_child_nodes
 
 init_node:
@@ -34,7 +34,7 @@ init_node:
 	sw s1, 8(a0)   	# new_node->right = NULL;
 
 	# Put result value in a place where calling code can access it
-	addi a0, x0, a0
+	add a0, x0, a0
 
 	# Epilogue: Restore register values and free space from the stack
 	lw ra, 8(sp)
@@ -77,7 +77,8 @@ left_node_isnt_null:
 	sw   t0, 4(a0)   # parent->left = left_node;
 	# Check whether the right node is existed
 	addi t1, a2, 2   # (parent_idx+1)+1 == parent_idx+2
-	bgt  t1, NUM_NODE, check_right_node # if ((parent_idx+1)+1 < NUM_NODE)
+	slt  t2, t1, NUM_NODE     # (parent_idx+1)+1 < NUM_NODE
+	bnez t2, check_right_node # if ((parent_idx+1)+1 < NUM_NODE)
 	# add_child_nodes(left_node, tree_list, parent_idx+1);
 	mv   a0, t0      # Prepare arguments; 1st Parameter: left_node
                          # 2nd Parameter: tree_list, already in a1
@@ -112,7 +113,8 @@ right_node_isnt_null:
 	sw   t0, 4(a0)   # parent->right = right_node;
 	# Check whether the right node is existed
 	addi t1, a2, 3   # (parent_idx+2)+1 == parent_idx+3
-	bgt  t1, NUM_NODE, end_of_add_child_nodes # if ((parent_idx+1)+1 < NUM_NODE)
+	slt  t2, t1, NUM_NODE           # (parent_idx+2)+1 < NUM_NODE
+	bnez t2, end_of_add_child_nodes # if ((parent_idx+2)+1 < NUM_NODE)
 	# add_child_nodes(right_node, tree_list, parent_idx+1);
 	mv   a0, t0      # Prepare arguments; 1st Parameter: right_node
                          # 2nd Parameter: tree_list, already in a1
