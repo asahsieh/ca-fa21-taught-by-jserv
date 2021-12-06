@@ -72,7 +72,7 @@ sbrk:
 	la t0, brk_ptr
 	mv t1, t0
 	add t2, t0, a0
-   sw t2, 0(t0)
+	sw t2, 0(t0)
 	mv a0, t1
 	jr ra
 
@@ -89,8 +89,7 @@ init_node:
 	# implmented by above `sbrk` function  
 	li   a0, 12    	# Number of bytes to be allcated, 4*3 bytes for TreeNode
 	jal  sbrk
-	lw   t0, 0(s0)	# new_node->val = value;
-	sw   t0, 0(a0) 	#
+	sw   s0, 0(a0) 	# new_node->val = value;
 	sw   s1, 4(a0)	# new_node->left = NULL;
 	sw   s1, 8(a0)  # new_node->right = NULL;
 
