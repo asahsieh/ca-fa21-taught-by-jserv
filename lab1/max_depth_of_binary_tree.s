@@ -3,7 +3,7 @@
 # -----
 #   |
 #   v
-# 
+#
 #   ^
 #   |
 # -----
@@ -49,9 +49,8 @@ _start:
 
 main:
 	la  t0, tree_list # Load address of tree_list
- 	lw  a0, 0(t0)	  # put tree_list[0] to argument register, a0
+	lw  a0, 0(t0)	  # put tree_list[0] to argument register, a0
 	jal init_node     # Save return address and jump to the init_node function
-	mv  t1, a0	  # Save reference of *root for useof function calls 
 	add a0, x0, a0	  # 1st Parameter: root
 	jal print_subTree
 
@@ -66,7 +65,7 @@ main:
 #   load the current brk_ptr
 #   store it in a temporary reg
 #   modify it according to the argument in a0 (increment bytes)
-#   store value of temporary reg back to brk_ptr 
+#   store value of temporary reg back to brk_ptr
 #   return the temporary reg (brk ptr before modification)
 sbrk:
 	la t0, brk_ptr
@@ -85,8 +84,8 @@ init_node:
 	addi s0, a0, 0	# Store the parameters before calling other function
 	li   s1, NULL     # Load ASCII code of NULL
 
-	# Allocate a memory region on heap by the `malloc` 
-	# implmented by above `sbrk` function  
+	# Allocate a memory region on heap by the `malloc`
+	# implmented by above `sbrk` function
 	li   a0, 12    	# Number of bytes to be allcated, 4*3 bytes for TreeNode
 	jal  sbrk
 	sw   s0, 0(a0) 	# new_node->val = value;
@@ -101,7 +100,9 @@ init_node:
 	lw s1, 4(sp)
 	lw ra, 8(sp)
 	addi sp, sp, 12
-	jr ra # Return to caller
+
+	# Return to caller
+	jr ra
 
 # Input: reference of *parent
 print_subTree:
@@ -112,64 +113,72 @@ print_subTree:
 	addi s0, a0, 0	  # Store *root before calling other function
 
 	# printf("\n===== Print_sub_tree =====\n");
-	addi a0, x0, 10 	 # Print newline '\n'
+	addi a0, x0, 10	 # Print newline '\n'
 	jal print_char   #
-	la  a0, str1	 # Print "===== Print_sub_tree ====="	
+	la  a0, str1	 # Print "===== Print_sub_tree ====="
 	jal print_string #
-	addi a0, x0, 10 	 # Print newline '\n'
+	addi a0, x0, 10	 # Print newline '\n'
 	jal print_char   #
 
-	# printf("\tParent[%0d]\n", parent->val);
-	addi a0, x0, 9	 # Print '\t'     	
-        jal print_char   
+	# printf("\t   Parent[%0d]\n", parent->val);
+	addi a0, x0, 9	 # Print '\t'
+	jal print_char
+	addi a0, x0, 32  # Print ' '
+	jal print_char
+	addi a0, x0, 32  # Print ' '
+	jal print_char
+	addi a0, x0, 32  # Print ' '
+	jal print_char
 	mv  a0, s0
 	la  a1, str2
-	jal print_nodeValue	
+	jal print_nodeValue
 	addi a0, x0, 10
 	jal print_char
 
-   	# printf("\t/\t\\\n"); Print connection of nodes "	/	\"
-	addi a0, x0, 9	 # Print '\t'     	
-        jal print_char   
+	# printf("\t /\t\\\n"); Print connection of nodes "	 /	\"
+	addi a0, x0, 9	 # Print '\t'
+	jal print_char
+	addi a0, x0, 32  # Print ' '
+	jal print_char
 	addi a0, x0, 47	 # Print '/'
-        jal print_char   
-	addi a0, x0, 9	 # Print '\t'     	
-        jal print_char   
+	jal print_char
+	addi a0, x0, 9	 # Print '\t'
+	jal print_char
 	addi a0, x0, 92	 # Print '\'
-        jal print_char   
+	jal print_char
 	addi a0, x0, 10
 	jal print_char
-	
+
 	# if (parent->left != NULL) {
 	#     printf("LeftNode[%0d]", parent->left->val);
 	# } else printf("\tNULL");
 
 	#   Load operands for use of control statments
-  	li  t0, NULL   
-	la  t1, str5  
+	li  t0, NULL
+	la  t1, str5
 
 	lw  t2, 4(s0) 	 # parent->left
- 	bne t2, t0, leftNode_doesnt_equ_NULL  
+	bne t2, t0, leftNode_doesnt_equ_NULL
 	addi a0, x0, 9	 # Print '\t'   	 # } else printf("\tNULL");
 	jal print_char
-	mv  a0, t1	
+	mv  a0, t1
 	jal print_string
 	j check_rightNode_null
 leftNode_doesnt_equ_NULL:
 	#     printf("LeftNode[%0d]", parent->left->val);
 	mv  a0, t2
 	la  a1, str3
-	jal print_nodeValue	
+	jal print_nodeValue
 check_rightNode_null:
 
 	# if (parent->right != NULL) {
 	#     printf("\tRightNode[%0d]", parent->right->val);
 	# } else printf("\tNULL");
 
- 	bne t2, t0, rightNode_doesnt_equ_NULL  
+	bne t2, t0, rightNode_doesnt_equ_NULL
 	addi a0, x0, 9	 # Print '\t'   	 # } else printf("\tNULL");
 	jal print_char
-	mv  a0, t1	
+	mv  a0, t1
 	jal print_string
 	j end_of_print_subTree
 rightNode_doesnt_equ_NULL:
@@ -177,33 +186,38 @@ rightNode_doesnt_equ_NULL:
 	lw  t2, 8(s0) 	 # parent->right
 	mv  a0, t2
 	la  a1, str4     # Load "RightNode"
-	jal print_nodeValue	
+	jal print_nodeValue
 end_of_print_subTree:
 	addi a0, x0, 10   	 # printf("\n");
 	jal print_char
-  		
+
 	# Epilogue: Restore register values and free space from the stack
 	lw ra, 4(sp)
 	lw s0, 0(sp)
-	addi sp, sp,8 
+	addi sp, sp,8
 	jr ra # Return to caller
 
 # a0: node value, a1: Print node type (i.e., Parent, LeftNode or RightNode)
 print_nodeValue:
-	mv  t0, a0 	 # Backup arg *parent before calling print_char
-	mv  a0, a1       # Print node type before node value	
+	# Prologue: Backup return address to register instead of Stack
+	mv  t0, ra
+
+	mv  t1, a0       # Backup arg *parent before calling print_char
+	mv  a0, a1       # Print node type before node value
 	jal print_string
 	addi a0, x0, 91
 	jal print_char
-	lw  t1, 0(t0)	
-	mv  a0, t1   	 # Print nodeValue in int type
+	lw  t2, 0(t1)
+	mv  a0, t2   	 # Print nodeValue in int type
 	jal print_int
 	addi a0, x0, 93
 	jal print_char
-	jr  ra
 
-print_int:	
-	li a7, 1	
+	# Epilogue: Restore ra register value
+	mv  ra, t0
+	jr  ra
+print_int:
+	li a7, 1
 	ecall
 	jr ra
 
@@ -215,7 +229,7 @@ print_char:
 	jr ra
 
 print_string:
-	li a7, 4 
+	li a7, 4
 	ecall
 	jr ra
 
